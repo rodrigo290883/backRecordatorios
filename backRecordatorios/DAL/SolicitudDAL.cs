@@ -23,7 +23,7 @@ namespace backRecordatorios.DAL
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("SELECT s.folio,s.idsap,s.fecha_inicio ,s.fecha_fin ,s.estatus , est.descripcion ,s.tipo_solicitud ,tip.solicitud ,s.observacion_solicitante ,sol.nombre,apr.idsap_padre,apr.email_line,s.fecha_solicitud,GETDATE() as fecha_creacion "+
+                SqlCommand cmd = new SqlCommand("SELECT s.folio,s.idsap,s.fecha_inicio ,s.fecha_fin ,s.estatus , est.descripcion ,s.tipo_solicitud ,tip.solicitud ,s.observacion_solicitante ,sol.nombre,s.idsap_aprobador,s.email_aprobador,s.fecha_solicitud,GETDATE() as fecha_creacion,s.nombre_aprobador "+
                                                 "FROM solicitudes s LEFT JOIN empleados sol ON s.idsap = sol.idsap "+
                                                 "LEFT JOIN empleados apr ON apr.id = (SELECT TOP 1 id  FROM empleados WHERE idsap_padre = s.idsap_aprobador) "+
                                                 "LEFT JOIN ctipos_solicitud tip ON s.tipo_solicitud = tip.id_tipo_solicitud LEFT JOIN cestatus est ON s.estatus = est.estatus "+
@@ -49,6 +49,7 @@ namespace backRecordatorios.DAL
                     aux.email_aprobador = rdr.IsDBNull(11)? null :rdr[11].ToString();
                     aux.fecha_solicitud = Convert.ToDateTime(rdr.IsDBNull(12) ? null : rdr[12]);
                     aux.fecha_asignacion = Convert.ToDateTime(rdr.IsDBNull(13) ? null : rdr[13]);
+                    aux.nombre_aprobador = rdr.IsDBNull(14) ? null : rdr[14].ToString();
 
                     if (recordatorio(aux))
                     {
@@ -89,7 +90,7 @@ namespace backRecordatorios.DAL
             string folio = sol.folio.ToString();
             string empleado = sol.nombre;
             string id_empleado = sol.idsap.ToString();
-            string aprobador = sol.idsap_aprobador.ToString();
+            string aprobador = sol.nombre_aprobador.ToString();
             string destino = sol.email_aprobador;
             string solicitud = sol.solicitud;
             string fecha_inicio = sol.fecha_inicio.ToString();
